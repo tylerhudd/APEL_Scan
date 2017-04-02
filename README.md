@@ -10,8 +10,11 @@ It flows a liquid through transparent tubing over the SiPM inside of a light-tig
 The microcontroller determines the amount of photons absorbed by the SiPM with a function depending on the peak voltage level.
 
 ## Components used with microcontroller
-* **Pushbuttons**: *Start* - to start test and store peak voltage until 'Stop' is pushed.  *Stop* - to end the test and display the result.  *Read Bias* - to read the voltage bias across the SiPM for adjustmet.
-* **LCD**: for displaying results, bias, etc.
+* **Pushbuttons**:
+  * *Start* - to start test and store peak voltage until 'Stop' is pushed. 
+  * *Stop* - to end the test and display the result.
+  * *Read Bias* - to read the voltage bias across the SiPM for adjustmet.
+* **LCD**: 16x2, for displaying results, bias, etc.
 
 ## Authors
 
