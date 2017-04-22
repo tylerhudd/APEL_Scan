@@ -13,19 +13,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   4 .debug_aranges 00000070  00000000  00000000  00000ff4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000fc2  00000000  00000000  00001064  2**0
+  5 .debug_info   00000fc3  00000000  00000000  00001064  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000007d3  00000000  00000000  00002026  2**0
+  6 .debug_abbrev 000007eb  00000000  00000000  00002027  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000005d8  00000000  00000000  000027f9  2**0
+  7 .debug_line   000005d8  00000000  00000000  00002812  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000108  00000000  00000000  00002dd4  2**2
+  8 .debug_frame  00000108  00000000  00000000  00002dec  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000488  00000000  00000000  00002edc  2**0
+  9 .debug_str    00000488  00000000  00000000  00002ef4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000039e  00000000  00000000  00003364  2**0
+ 10 .debug_loc    0000039e  00000000  00000000  0000337c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000060  00000000  00000000  00003702  2**0
+ 11 .debug_ranges 00000060  00000000  00000000  0000371a  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -396,12 +396,12 @@ void print_volt(float voltage)
  250:	08 95       	ret
 
 00000252 <store_cust_chars>:
-	_delay_ms(10);
 }
 
 void store_cust_chars()
 {
-	lcd_cmd(0x40);					// set CGRAM address to 0x00
+	// A CGRAM address: 0x00
+	lcd_cmd(0x40);
  252:	80 e4       	ldi	r24, 0x40	; 64
  254:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
 	lcd_data(0x03);
@@ -429,6 +429,7 @@ void store_cust_chars()
  282:	80 e0       	ldi	r24, 0x00	; 0
  284:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
 	
+	// P 0x08
 	lcd_cmd(0x48);
  288:	88 e4       	ldi	r24, 0x48	; 72
  28a:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
@@ -457,6 +458,7 @@ void store_cust_chars()
  2b8:	80 e0       	ldi	r24, 0x00	; 0
  2ba:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
 	
+	// E 0x10
 	lcd_cmd(0x50);
  2be:	80 e5       	ldi	r24, 0x50	; 80
  2c0:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
@@ -485,6 +487,7 @@ void store_cust_chars()
  2ee:	80 e0       	ldi	r24, 0x00	; 0
  2f0:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
 	
+	// L 0x18
 	lcd_cmd(0x58);
  2f4:	88 e5       	ldi	r24, 0x58	; 88
  2f6:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
@@ -519,28 +522,28 @@ void store_cust_chars()
 
 void print_APEL()
 {
-	lcd_cmd(0X81);					// set position [1,2]
+	lcd_cmd(0X81);		// set position [1,2]
  32c:	81 e8       	ldi	r24, 0x81	; 129
  32e:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
-	lcd_data(0x00);
+	lcd_data(0x00);		// A
  332:	80 e0       	ldi	r24, 0x00	; 0
  334:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
-	lcd_data(0x2E);
+	lcd_data(0x2E);		// .
  338:	8e e2       	ldi	r24, 0x2E	; 46
  33a:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
-	lcd_data(0x01);
+	lcd_data(0x01);		// P
  33e:	81 e0       	ldi	r24, 0x01	; 1
  340:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
-	lcd_data(0x2E);
+	lcd_data(0x2E);		// .
  344:	8e e2       	ldi	r24, 0x2E	; 46
  346:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
-	lcd_data(0x02);
+	lcd_data(0x02);		// E
  34a:	82 e0       	ldi	r24, 0x02	; 2
  34c:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
-	lcd_data(0x2E);
+	lcd_data(0x2E);		// .
  350:	8e e2       	ldi	r24, 0x2E	; 46
  352:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
-	lcd_data(0x03);
+	lcd_data(0x03);		// L
  356:	83 e0       	ldi	r24, 0x03	; 3
  358:	0e 94 69 00 	call	0xd2	; 0xd2 <lcd_data>
 	lcd_str(". Scan");	
@@ -612,10 +615,10 @@ int main()
  3a6:	cc 24       	eor	r12, r12
  3a8:	c3 94       	inc	r12
  3aa:	d1 2c       	mov	r13, r1
-			case 3 :	// display bias voltage
 				Vread = read_adc(1);
-				bias = (float)(Vread * 5.0 * 6.0 / 1023.0);	// read and convert ADC channel 6 with 6:1 voltage divider
-				lcd_cmd(0xc0);
+				// read and convert ADC channel 6 with 6:1 voltage divider
+				bias = (float)(Vread * 5.0 * ((498.0+101.75)/101.75) / 1023.0);	
+				lcd_cmd(0xc0);				// set position [2,1]
 				print_volt(bias);
 			break;
  3ac:	0f 2e       	mov	r0, r31
@@ -623,7 +626,7 @@ int main()
  3b0:	ef 2e       	mov	r14, r31
  3b2:	f0 2d       	mov	r31, r0
  3b4:	f1 2c       	mov	r15, r1
-			lcd_cmd(0xC3);					// set position [2,4];
+			lcd_cmd(0xC3);					// set position [2,4]
 			lcd_str("Running...");
 		}
 		else if ((PIND & 0x02) == 0x02)		// STOP button pushed
@@ -660,7 +663,7 @@ int main()
  3ce:	8b e1       	ldi	r24, 0x1B	; 27
  3d0:	91 e0       	ldi	r25, 0x01	; 1
  3d2:	0e 94 7b 00 	call	0xf6	; 0xf6 <lcd_str>
-			lcd_cmd(0xC3);					// set position [2,4];
+			lcd_cmd(0xC3);					// set position [2,4]
  3d6:	83 ec       	ldi	r24, 0xC3	; 195
  3d8:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
 			lcd_str("Running...");
@@ -678,7 +681,7 @@ int main()
  3e8:	3c c0       	rjmp	.+120    	; 0x462 <__LOCK_REGION_LENGTH__+0x62>
 			print_APEL();
 			lcd_str(". Scan");
-			lcd_cmd(0xC3);					// set position [2,4];
+			lcd_cmd(0xC3);					// set position [2,4]
 			lcd_str("Running...");
 		}
 		else if ((PIND & 0x02) == 0x02)		// STOP button pushed
@@ -688,23 +691,23 @@ int main()
 			state = 2;
 			lcd_init();
  3ee:	0e 94 5c 00 	call	0xb8	; 0xb8 <lcd_init>
-			lcd_cmd(0x82);
+			lcd_cmd(0x82);					// set position [1,3]
  3f2:	82 e8       	ldi	r24, 0x82	; 130
  3f4:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
 			lcd_str("Peak Voltage");
  3f8:	88 e3       	ldi	r24, 0x38	; 56
  3fa:	91 e0       	ldi	r25, 0x01	; 1
  3fc:	0e 94 7b 00 	call	0xf6	; 0xf6 <lcd_str>
-			peak = (float)(peakVoltage * 5.0 /1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
-			lcd_cmd(0xC0);
+			peak = (float)(peakVoltage * 5.0 / 1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
+			lcd_cmd(0xC0);					// set position [2,1];
  400:	80 ec       	ldi	r24, 0xC0	; 192
  402:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
 		{
 			state = 2;
 			lcd_init();
-			lcd_cmd(0x82);
+			lcd_cmd(0x82);					// set position [1,3]
 			lcd_str("Peak Voltage");
-			peak = (float)(peakVoltage * 5.0 /1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
+			peak = (float)(peakVoltage * 5.0 / 1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
  406:	be 01       	movw	r22, r28
  408:	0d 2e       	mov	r0, r29
  40a:	00 0c       	add	r0, r0
@@ -721,10 +724,10 @@ int main()
  424:	4f e7       	ldi	r20, 0x7F	; 127
  426:	54 e4       	ldi	r21, 0x44	; 68
  428:	0e 94 cc 02 	call	0x598	; 0x598 <__divsf3>
-			lcd_cmd(0xC0);
+			lcd_cmd(0xC0);					// set position [2,1];
 			print_volt(peak);
  42c:	0e 94 a5 00 	call	0x14a	; 0x14a <print_volt>
-			lcd_cmd(0xC3);					// set position [2,4];
+			lcd_cmd(0xC3);					// set position [2,4]
 			lcd_str("Running...");
 		}
 		else if ((PIND & 0x02) == 0x02)		// STOP button pushed
@@ -734,8 +737,8 @@ int main()
  432:	99 2d       	mov	r25, r9
  434:	c6 cf       	rjmp	.-116    	; 0x3c2 <main+0x3c>
 			lcd_str("Peak Voltage");
-			peak = (float)(peakVoltage * 5.0 /1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
-			lcd_cmd(0xC0);
+			peak = (float)(peakVoltage * 5.0 / 1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
+			lcd_cmd(0xC0);					// set position [2,1];
 			print_volt(peak);
 		}
 		else if ((PIND & 0x04) == 0x04)		// READ BIAS button pushed
@@ -745,14 +748,14 @@ int main()
 			state = 3;
 			lcd_init();
  43a:	0e 94 5c 00 	call	0xb8	; 0xb8 <lcd_init>
-			lcd_cmd(0x83);
+			lcd_cmd(0x83);					// set position [1,4]
  43e:	83 e8       	ldi	r24, 0x83	; 131
  440:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
 			lcd_str("SiPM Bias");
  444:	85 e4       	ldi	r24, 0x45	; 69
  446:	91 e0       	ldi	r25, 0x01	; 1
  448:	0e 94 7b 00 	call	0xf6	; 0xf6 <lcd_str>
-			lcd_cmd(0xC2);
+			lcd_cmd(0xC2);					// set position [2,3]
  44c:	82 ec       	ldi	r24, 0xC2	; 194
  44e:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
  452:	11 c0       	rjmp	.+34     	; 0x476 <__LOCK_REGION_LENGTH__+0x76>
@@ -786,16 +789,17 @@ int main()
  476:	81 e0       	ldi	r24, 0x01	; 1
  478:	0e 94 91 00 	call	0x122	; 0x122 <read_adc>
  47c:	8c 01       	movw	r16, r24
-				bias = (float)(Vread * 5.0 * 6.0 / 1023.0);	// read and convert ADC channel 6 with 6:1 voltage divider
-				lcd_cmd(0xc0);
+				// read and convert ADC channel 6 with 6:1 voltage divider
+				bias = (float)(Vread * 5.0 * ((498.0+101.75)/101.75) / 1023.0);	
+				lcd_cmd(0xc0);				// set position [2,1]
  47e:	80 ec       	ldi	r24, 0xC0	; 192
  480:	0e 94 4b 00 	call	0x96	; 0x96 <lcd_cmd>
-				if(Vread > peakVoltage) peakVoltage = Vread;
 			break;
 			
 			case 3 :	// display bias voltage
 				Vread = read_adc(1);
-				bias = (float)(Vread * 5.0 * 6.0 / 1023.0);	// read and convert ADC channel 6 with 6:1 voltage divider
+				// read and convert ADC channel 6 with 6:1 voltage divider
+				bias = (float)(Vread * 5.0 * ((498.0+101.75)/101.75) / 1023.0);	
  484:	b8 01       	movw	r22, r16
  486:	11 0f       	add	r17, r17
  488:	88 0b       	sbc	r24, r24
@@ -806,9 +810,9 @@ int main()
  494:	40 ea       	ldi	r20, 0xA0	; 160
  496:	50 e4       	ldi	r21, 0x40	; 64
  498:	0e 94 02 04 	call	0x804	; 0x804 <__mulsf3>
- 49c:	20 e0       	ldi	r18, 0x00	; 0
- 49e:	30 e0       	ldi	r19, 0x00	; 0
- 4a0:	40 ec       	ldi	r20, 0xC0	; 192
+ 49c:	22 e8       	ldi	r18, 0x82	; 130
+ 49e:	3e e9       	ldi	r19, 0x9E	; 158
+ 4a0:	4c eb       	ldi	r20, 0xBC	; 188
  4a2:	50 e4       	ldi	r21, 0x40	; 64
  4a4:	0e 94 02 04 	call	0x804	; 0x804 <__mulsf3>
  4a8:	20 e0       	ldi	r18, 0x00	; 0
@@ -816,7 +820,7 @@ int main()
  4ac:	4f e7       	ldi	r20, 0x7F	; 127
  4ae:	54 e4       	ldi	r21, 0x44	; 68
  4b0:	0e 94 cc 02 	call	0x598	; 0x598 <__divsf3>
-				lcd_cmd(0xc0);
+				lcd_cmd(0xc0);				// set position [2,1]
 				print_volt(bias);
  4b4:	0e 94 a5 00 	call	0x14a	; 0x14a <print_volt>
 			break;

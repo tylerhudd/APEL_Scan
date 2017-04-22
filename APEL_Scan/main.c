@@ -3,7 +3,7 @@
  *
  * Created : 3/7/2017
  * Author : Tyler Huddleston
- * Microcontroller : ATmega328P (TQFP-32 pins)
+ * Microcontroller : ATmega328P (TQFP)
  * 
  * This program is for the microcontroller module of the A.P.E.L Scan project.  The
  * A.P.E.L. Scan project is the Spring 2017 Senior Design project created by Angsuman
@@ -47,7 +47,7 @@ void lcd_str(char *str);				// prints a string to the LCD screen
 void adc_init();						// sets the reference voltage and clock prescaler for the ADC
 uint16_t read_adc(uint8_t channel);		// reads and returns the voltage input at an ADC channel
 void print_volt(float voltage);			// prints a voltage to the LCD
-void print_APEL();
+void print_APEL();						// prints custom font
 void welcome_screen();					// prints start up welcome message
 void store_cust_chars();				// load custom characters into CGRAM on LCD
 
@@ -83,26 +83,26 @@ int main()
 			lcd_init();
 			print_APEL();
 			lcd_str(". Scan");
-			lcd_cmd(0xC3);					// set position [2,4];
+			lcd_cmd(0xC3);					// set position [2,4]
 			lcd_str("Running...");
 		}
 		else if ((PIND & 0x02) == 0x02)		// STOP button pushed
 		{
 			state = 2;
 			lcd_init();
-			lcd_cmd(0x82);
+			lcd_cmd(0x82);					// set position [1,3]
 			lcd_str("Peak Voltage");
-			peak = (float)(peakVoltage * 5.0 /1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
-			lcd_cmd(0xC0);
+			peak = (float)(peakVoltage * 5.0 / 1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
+			lcd_cmd(0xC0);					// set position [2,1];
 			print_volt(peak);
 		}
 		else if ((PIND & 0x04) == 0x04)		// READ BIAS button pushed
 		{
 			state = 3;
 			lcd_init();
-			lcd_cmd(0x83);
+			lcd_cmd(0x83);					// set position [1,4]
 			lcd_str("SiPM Bias");
-			lcd_cmd(0xC2);
+			lcd_cmd(0xC2);					// set position [2,3]
 		}
 			
 		switch(state)
@@ -114,8 +114,9 @@ int main()
 			
 			case 3 :	// display bias voltage
 				Vread = read_adc(1);
-				bias = (float)(Vread * 5.0 * 6.0 / 1023.0);	// read and convert ADC channel 6 with 6:1 voltage divider
-				lcd_cmd(0xc0);
+				// read and convert ADC channel 6 with 6:1 voltage divider
+				bias = (float)(Vread * 5.0 * ((498.0+101.75)/101.75) / 1023.0);	
+				lcd_cmd(0xc0);				// set position [2,1]
 				print_volt(bias);
 			break;
 		}
@@ -208,7 +209,8 @@ void welcome_screen()
 
 void store_cust_chars()
 {
-	lcd_cmd(0x40);					// set CGRAM address to 0x00
+	// A CGRAM address: 0x00
+	lcd_cmd(0x40);
 	lcd_data(0x03);
 	lcd_data(0x07);
 	lcd_data(0x0B);
@@ -218,6 +220,7 @@ void store_cust_chars()
 	lcd_data(0x13);
 	lcd_data(0x00);
 	
+	// P 0x08
 	lcd_cmd(0x48);
 	lcd_data(0x1E);
 	lcd_data(0x1B);
@@ -228,6 +231,7 @@ void store_cust_chars()
 	lcd_data(0x18);
 	lcd_data(0x00);
 	
+	// E 0x10
 	lcd_cmd(0x50);
 	lcd_data(0x1E);
 	lcd_data(0x18);
@@ -238,6 +242,7 @@ void store_cust_chars()
 	lcd_data(0x1E);
 	lcd_data(0x00);
 	
+	// L 0x18
 	lcd_cmd(0x58);
 	lcd_data(0x10);
 	lcd_data(0x10);
@@ -251,13 +256,13 @@ void store_cust_chars()
 
 void print_APEL()
 {
-	lcd_cmd(0X81);					// set position [1,2]
-	lcd_data(0x00);
-	lcd_data(0x2E);
-	lcd_data(0x01);
-	lcd_data(0x2E);
-	lcd_data(0x02);
-	lcd_data(0x2E);
-	lcd_data(0x03);
+	lcd_cmd(0X81);		// set position [1,2]
+	lcd_data(0x00);		// A
+	lcd_data(0x2E);		// .
+	lcd_data(0x01);		// P
+	lcd_data(0x2E);		// .
+	lcd_data(0x02);		// E
+	lcd_data(0x2E);		// .
+	lcd_data(0x03);		// L
 	lcd_str(". Scan");	
 }
