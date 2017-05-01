@@ -23,7 +23,13 @@
  * operating in and which values to show on the LCD screen.
  */ 
 
-#define F_CPU 8000000UL		// 8.0 MHz internal clock
+/*  Program Update: 4/30/2017
+	* Changed internal clock to 1MHz to avoid disabling fuses
+	* Modified signal voltage detection to reference internal bandgap for improved
+	  resolution.
+*/
+
+#define F_CPU 1000000UL		// 1.0 MHz internal clock
 
 #include <avr/io.h>
 #include <stdio.h>
@@ -45,6 +51,7 @@ void lcd_cmd(char cmd_out);				// sends a command across the LCD command bits
 void lcd_data(char data_out);			// sends data across the LCD data register
 void lcd_str(char *str);				// prints a string to the LCD screen
 void adc_init();						// sets the reference voltage and clock prescaler for the ADC
+void adc_initBG();						// sets the reference voltage as internal 1.1V bandgap and prescaler for ADC
 uint16_t read_adc(uint8_t channel);		// reads and returns the voltage input at an ADC channel
 void print_volt(float voltage);			// prints a voltage to the LCD
 void print_APEL();						// prints custom font
@@ -62,7 +69,6 @@ int main()
 	DDRB = 0XFF;		// Port B: data register for LCD - set to output
 	DDRD = 0XF8;		// Port D: PD0:2 push button input, PD3:5 LCD commands output
 	
-	adc_init();
 	lcd_init();
 	store_cust_chars();
 	welcome_screen();
@@ -78,6 +84,7 @@ int main()
 		
 		if((PIND & 0x01) == 0x01)			// START button pushed
 		{
+			adc_initBG();
 			state = 1;
 			peakVoltage = 0;
 			lcd_init();
@@ -92,12 +99,14 @@ int main()
 			lcd_init();
 			lcd_cmd(0x82);					// set position [1,3]
 			lcd_str("Peak Voltage");
-			peak = (float)(peakVoltage * 5.0 / 1023.0);  // convert 10-bit binary voltage value to decimal referenced to 5V
+			// convert 10-bit binary voltage value to decimal referenced to 1.1V with 1/6 divider at input
+			peak = (float)(peakVoltage * 1.1 * ((495.2+101.65)/101.65) / 1023.0);  
 			lcd_cmd(0xC0);					// set position [2,1];
 			print_volt(peak);
 		}
 		else if ((PIND & 0x04) == 0x04)		// READ BIAS button pushed
 		{
+			adc_init();
 			state = 3;
 			lcd_init();
 			lcd_cmd(0x83);					// set position [1,4]
@@ -108,14 +117,14 @@ int main()
 		switch(state)
 		{
 			case 1 :	// check for and capture peak voltage level
-				Vread = read_adc(0);
+				Vread = read_adc(7);
 				if(Vread > peakVoltage) peakVoltage = Vread;
 			break;
 			
 			case 3 :	// display bias voltage
 				Vread = read_adc(1);
 				// read and convert ADC channel 6 with 6:1 voltage divider
-				bias = (float)(Vread * 5.0 * ((498.0+101.75)/101.75) / 1023.0);	
+				bias = (float)(Vread * 5.0 * ((498.1+101.8)/101.8) / 1023.0);	
 				lcd_cmd(0xc0);				// set position [2,1]
 				print_volt(bias);
 			break;
@@ -161,12 +170,19 @@ void lcd_str(char *str)
 
 void adc_init()
 {
-	ADMUX = (1<<REFS0);	// Aref = Vcc
+	ADMUX = (0<<REFS1|1<<REFS0);	// Aref = Vcc
 	
-	/* the ADC needs a clock signal between 50kHz and 200kHz, with internal 8MHz clock,
-	   a prescaler of 64 gives the ADC a clock of 125kHz */
+	/* the ADC needs a clock signal between 50kHz and 200kHz, with internal 1MHz clock,
+	   a prescaler of 8 gives the ADC a clock of 125kHz */
 	
-	ADCSRA = (1<<ADPS2)|(1<<ADPS1)|(1<<ADEN);	// enable ADC, set prescaler to 64
+	ADCSRA = (0<<ADPS2)|(1<<ADPS1)|(1<<ADPS0)|(1<<ADEN);	// enable ADC, set prescaler to 8
+}
+
+void adc_initBG()
+{
+	ADMUX = (1<<REFS1|1<<REFS1);	// Aref = 1.1V inernal bandgap reference
+	
+	ADCSRA = (0<<ADPS2)|(1<<ADPS1)|(1<<ADPS0)|(1<<ADEN);	// enable ADC, set prescaler to 8
 }
 
 uint16_t read_adc(uint8_t channel)
